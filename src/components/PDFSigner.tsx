@@ -10,6 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Download, FileUp, PenTool, RotateCcw, Shield } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 export default function PDFSigner() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
@@ -50,7 +51,7 @@ export default function PDFSigner() {
 
   const handleApplySignature = () => {
     if (signatureCanvasRef.current?.isEmpty()) {
-      alert("Please draw a signature first");
+      toast.error("Please draw a signature first");
       return;
     }
     
@@ -58,12 +59,13 @@ export default function PDFSigner() {
     if (dataUrl) {
       setSignatureDataUrl(dataUrl);
       setIsSignatureModalOpen(false);
+      toast.success("Signature saved successfully");
     }
   };
 
   const handleEmbedSignature = async () => {
     if (!pdfFile || !signatureDataUrl) {
-      alert("Please upload a PDF and draw a signature first");
+      toast.error("Please upload a PDF and draw a signature first");
       return;
     }
 
@@ -113,10 +115,10 @@ export default function PDFSigner() {
       const url = URL.createObjectURL(blob);
       setSignedPdfUrl(url);
       
-      alert("Signature applied successfully!");
+      toast.success("Signature applied successfully!");
     } catch (error) {
       console.error("Error embedding signature:", error);
-      alert("Failed to embed signature. Please try again.");
+      toast.error("Failed to embed signature. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -124,7 +126,7 @@ export default function PDFSigner() {
 
   const handleDownload = () => {
     if (!signedPdfUrl) {
-      alert("Please apply the signature first");
+      toast.error("Please apply the signature first");
       return;
     }
 
@@ -132,6 +134,7 @@ export default function PDFSigner() {
     link.href = signedPdfUrl;
     link.download = `signed_${pdfFile?.name || "document.pdf"}`;
     link.click();
+    toast.success("PDF downloaded successfully");
   };
 
   const handleStartOver = () => {
