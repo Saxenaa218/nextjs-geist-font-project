@@ -82,7 +82,11 @@ export default function PDFSigner() {
       const { width, height } = firstPage.getSize();
 
       // Embed the signature image
-      const signatureImageBytes = await fetch(signatureDataUrl).then(res => res.arrayBuffer());
+      const signatureResponse = await fetch(signatureDataUrl);
+      if (!signatureResponse.ok) {
+        throw new Error("Failed to process signature image");
+      }
+      const signatureImageBytes = await signatureResponse.arrayBuffer();
       const signatureImage = await pdfDoc.embedPng(signatureImageBytes);
       
       // Calculate signature dimensions (scale to reasonable size)
